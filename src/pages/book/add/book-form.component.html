@@ -1,0 +1,15 @@
+<form name="form" [formGroup]="form" novalidate>
+  <mat-form-field>
+    <mat-label>Código</mat-label>
+    <input matInput formControlName="code">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Título</mat-label>
+    <input matInput formControlName="title">
+  </mat-form-field>
+
+  <mat-dialog-actions>
+    <button class="mat-raised-button mat-primary" (click)="save()">Salvar</button>
+    <button class="mat-raised-button" (click)="close()">Fechar</button>
+  </mat-dialog-actions>
+</form>
