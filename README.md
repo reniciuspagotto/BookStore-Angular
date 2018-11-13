@@ -1,4 +1,9 @@
-# Get Dependencies
+## Considerations
+
+This app has been developed with Angular 7 and Typescript.
+For depenedencies and run the project, it's necessary to use the command line. The command line target needs to stay at root of project.
+
+## Get Dependencies
 
 yarn
 
