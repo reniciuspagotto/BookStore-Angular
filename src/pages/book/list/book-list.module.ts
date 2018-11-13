@@ -5,6 +5,8 @@ import {
   MatRippleModule, MatPaginatorModule, MatTableModule, MatDialogModule, MatListModule
 } from '@angular/material';
 import { BookService } from './book.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { BookService } from './book.service';
     MatInputModule,
     MatRippleModule,
     MatPaginatorModule,
-    MatListModule
+    MatListModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot()
   ],
   exports: [
     MatDialogModule,

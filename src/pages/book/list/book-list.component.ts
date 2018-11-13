@@ -2,16 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
 import { BookFormComponent } from '../add/book-form.component';
 import { IBook } from 'src/interfaces/book';
-import { Observable } from 'rxjs';
 import { BookService } from './book.service';
+import { ToastrService } from 'ngx-toastr';
 
-const titles: string[] = ['Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack',
-  'Charlotte', 'Theodore', 'Isla', 'Oliver', 'Isabella', 'Jasper',
-  'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'];
-
-/**
- * @title Data table with sorting, pagination, and filtering.
- */
 @Component({
   selector: 'app-book-list',
   styleUrls: ['./book-list.component.css'],
@@ -26,13 +19,13 @@ export class BookListComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
-    public _bookService: BookService
+    public _bookService: BookService,
+    private toastr: ToastrService
   ) {
-    // Create 100 books
-    const books = Array.from({ length: 100 }, (_, k) => createBook(k + 1));
 
-    // Assign the data to the data source for the table to render
-    this.dataSource = new MatTableDataSource(books);
+    this._bookService.getAllBooks().subscribe(element => {
+      this.dataSource = new MatTableDataSource(element.data);
+    });
   }
 
   ngOnInit() {
@@ -53,14 +46,17 @@ export class BookListComponent implements OnInit {
   editBook(book) {
     this.dialog.open(BookFormComponent, {
       data: {
+        id: book.id,
         code: book.code,
         title: book.title
       }
-    });
+    }).afterClosed().subscribe(element => {
+      this.update(element);
+    })
   }
 
-  deleteBook(id) {
-    console.log(id);
+  deleteBook(id: string) {
+    this._bookService.deleteBook(id).subscribe();
   }
 
   getBooks(): void {
@@ -68,8 +64,38 @@ export class BookListComponent implements OnInit {
   }
 
   save(book: IBook): void {
-    this._bookService.saveBooks(book)
-      .subscribe();
+    this._bookService.saveBooks({
+      ...book,
+      ativo: true
+    }).subscribe(element => {
+
+      if (element.success == false) {
+        element.errors.forEach(element => {
+          this.toastr.error(element.message);
+        });
+      } else {
+        this._bookService.getAllBooks().subscribe(element => {
+          this.dataSource = new MatTableDataSource(element.data);
+        });
+      }
+    });
+  }
+
+  update(book: IBook): void {
+    this._bookService.updateBooks({
+      ...book,
+      ativo: true
+    }).subscribe(element => {
+      if (element.success == false) {
+        element.errors.forEach(element => {
+          this.toastr.error(element.message);
+        });
+      } else {
+        this._bookService.getAllBooks().subscribe(element => {
+          this.dataSource = new MatTableDataSource(element.data);
+        });
+      }
+    });
   }
 
   applyFilter(filterValue: string) {
@@ -79,17 +105,4 @@ export class BookListComponent implements OnInit {
       this.dataSource.paginator.firstPage();
     }
   }
-}
-
-/** Builds and returns a new User. */
-function createBook(id: number): IBook {
-  const title =
-    titles[Math.round(Math.random() * (titles.length - 1))] + ' ' +
-    titles[Math.round(Math.random() * (titles.length - 1))].charAt(0) + '.';
-
-  return {
-    id: Math.round(Math.random() * 100).toString(),
-    code: Math.round(Math.random() * 100).toString(),
-    title: title
-  };
 }

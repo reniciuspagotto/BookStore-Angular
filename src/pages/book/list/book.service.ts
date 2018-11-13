@@ -9,10 +9,18 @@ export class BookService {
   constructor(private _httpClient: HttpClient) { }
 
   getAllBooks(): Observable<any> {
-    return this._httpClient.get(`${environment.apiUrl}/`);
+    return this._httpClient.get(`${environment.apiUrl}/book`);
+  }
+
+  deleteBook(id: string): Observable<any> {
+    return this._httpClient.delete(`${environment.apiUrl}/book/${id}`);
   }
 
   saveBooks(book: IBook): Observable<any> {
-    return this._httpClient.post(`${environment.apiUrl}/`, book);
+    return this._httpClient.post(`${environment.apiUrl}/book`, book);
+  }
+
+  updateBooks(book: IBook): Observable<any> {
+    return this._httpClient.put(`${environment.apiUrl}/book`, book);
   }
 }

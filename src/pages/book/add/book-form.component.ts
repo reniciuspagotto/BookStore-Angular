@@ -14,10 +14,13 @@ export class BookFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<BookFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: IBook) { }
+    @Inject(MAT_DIALOG_DATA) public data: IBook) { 
+      console.log(data);
+    }
 
     ngOnInit() {
       this.form = this.fb.group({
+          id: [this.data == null ? '' : this.data.id],
           code: [this.data == null ? '' : this.data.code],
           title: [this.data == null ? '' : this.data.title]
       });
@@ -26,6 +29,7 @@ export class BookFormComponent implements OnInit {
   save() {
     this.dialogRef.close(this.form.getRawValue());
   }
+  
   close() {
     this.dialogRef.close('Cancel');
   }
