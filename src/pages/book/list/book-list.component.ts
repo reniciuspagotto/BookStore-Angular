@@ -56,11 +56,23 @@ export class BookListComponent implements OnInit {
   }
 
   deleteBook(id: string) {
-    this._bookService.deleteBook(id).subscribe();
+    this._bookService.deleteBook(id).subscribe(element => {
+      if (element.success == false) {
+        element.errors.forEach(element => {
+          this.toastr.error(element.message);
+        });
+      } else {
+        this._bookService.getAllBooks().subscribe(element => {
+          this.dataSource = new MatTableDataSource(element.data);
+        });
+      }
+    });
   }
 
   getBooks(): void {
-    this._bookService.getAllBooks().subscribe(books => this.dataSource = new MatTableDataSource(books));
+    this._bookService.getAllBooks().subscribe(books => {
+      this.dataSource = new MatTableDataSource(books)
+    });
   }
 
   save(book: IBook): void {
@@ -74,6 +86,7 @@ export class BookListComponent implements OnInit {
           this.toastr.error(element.message);
         });
       } else {
+        this.toastr.success("Livro cadastrado com sucesso");
         this._bookService.getAllBooks().subscribe(element => {
           this.dataSource = new MatTableDataSource(element.data);
         });
@@ -91,6 +104,7 @@ export class BookListComponent implements OnInit {
           this.toastr.error(element.message);
         });
       } else {
+        this.toastr.success("Livro atualizado com sucesso");
         this._bookService.getAllBooks().subscribe(element => {
           this.dataSource = new MatTableDataSource(element.data);
         });
